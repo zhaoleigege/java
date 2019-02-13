@@ -1,8 +1,5 @@
-# java
+# java学习总结
 
-
-
-#### 参考ziliao
-
-* [Spring boot 2.0 之优雅停机](https://www.jianshu.com/p/0c49eb23c627)
+* [java项目优雅停机](./code/shutdown/README.md)
+* [maven基本概念](./doc/maven/README.md)
 
