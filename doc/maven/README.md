@@ -255,6 +255,10 @@ vim settings.xml
 
 * [vertx的maven简单项目](../../code/maven)
 
+### 8.maven多项目
+
+* [maven多项目环境搭建](./maven多项目环境搭建.md)
+
 #### 参考资料
 
 * [Maven入门，读完这篇就够了](http://tengj.top/2018/01/01/maven/)

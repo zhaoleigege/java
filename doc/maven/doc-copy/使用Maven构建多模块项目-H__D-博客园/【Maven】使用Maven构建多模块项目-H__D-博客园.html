@@ -1,0 +1,516 @@
+
+<!DOCTYPE html>
+<html>
+  <!-- OriginalSrc: https://www.cnblogs.com/h--d/p/6001366.html -->
+  <head>
+    <meta http-equiv="Content-Type" content="text/html"; charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <title>【Maven】使用Maven构建多模块项目 - H__D - 博客园</title>
+    
+<link type="text/css" rel="stylesheet" href="assets/1550129554-c3c5109f48eaaa6d1602483cc44c28bb.css">
+
+<link id="MainCss" type="text/css" rel="stylesheet" href="assets/1550129554-4f92bd5413d132ad9f095ad925dc0ca4.css">
+
+<link id="mobile-style" media="only screen and (max-width: 767px)" type="text/css" rel="stylesheet" href="assets/1550129554-99e14d2b92ac8558263ef55247625257.css">
+<style>
+
+</style>
+<style>
+@media print {#ghostery-purple-box {display:none !important}}
+</style>
+<style>
+object,embed{                -webkit-animation-duration:.001s;-webkit-animation-name:playerInserted;                -ms-animation-duration:.001s;-ms-animation-name:playerInserted;                -o-animation-duration:.001s;-o-animation-name:playerInserted;                animation-duration:.001s;animation-name:playerInserted;}                @-webkit-keyframes playerInserted{from{opacity:0.99;}to{opacity:1;}}                @-ms-keyframes playerInserted{from{opacity:0.99;}to{opacity:1;}}                @-o-keyframes playerInserted{from{opacity:0.99;}to{opacity:1;}}                @keyframes playerInserted{from{opacity:0.99;}to{opacity:1;}}
+</style>
+
+    <style class="mx-wc-style">
+      .mx-wc-main img {max-width: 100%;}
+      .mx-wc-main{
+        box-sizing: content-box;
+        background-color: rgb(249, 252, 233) !important;
+        margin: 0 auto;
+        max-width: 980px;
+        padding: 15px 15px 80px 15px;
+      }
+
+      .clipping-information{
+        text-align: left;
+        margin-top: 20px;
+        background-color: #eeeeee !important;
+        padding: 15px;
+        border-radius: 4px;
+        color: #333;
+        font-size: 14px !important;
+        line-height: 22px !important;
+      }
+      .clipping-information a {
+        color: blue !important;
+        text-decoration: underline !important;
+      }
+      .clipping-information label {
+        display: inline;
+        text-transform: none;
+      }
+      .clipping-information label > code {
+        padding: 2px 8px;
+        background-color: rgba(200, 200, 200, 0.7)!important;
+        font-size: 14px;
+      }
+
+    </style>
+  </head>
+  <body style="background-color: #ffffff !important; min-height: 100%; height: auto;" id="" class="">
+    <div class="mx-wc-main">
+      <DIV class="pagelayout" style="display: block; float: none; position: relative; top: 0; left: 0; border: 0px; width: 100%; min-width:100%; max-width: 100%; min-height: auto; max-height: 100%; height: auto; padding: 0px; margin: 0px;"><TABLE width="90%" align="center" cellpadding="5" cellspacing="0" border="0" id="main" style="display: block; float: none; position: relative; top: 0; left: 0; border: 0px; width: 100%; min-width:100%; max-width: 100%; min-height: auto; max-height: 100%; height: auto; padding: 0px; margin: 0px;"><TBODY style="display: block; float: none; position: relative; top: 0; left: 0; border: 0px; width: 100%; min-width:100%; max-width: 100%; min-height: auto; max-height: 100%; height: auto; padding: 0px; margin: 0px;"><TR style="display: block; float: none; position: relative; top: 0; left: 0; border: 0px; width: 100%; min-width:100%; max-width: 100%; min-height: auto; max-height: 100%; height: auto; padding: 0px; margin: 0px;"><TD valign="top" id="content" style="display: block; float: none; position: relative; top: 0; left: 0; border: 0px; width: 100%; min-width:100%; max-width: 100%; min-height: auto; max-height: 100%; height: auto; padding: 0px; margin: 0px;"><DIV style="display: block; float: none; position: relative; top: 0; left: 0; border: 0px; width: 100%; min-width:100%; max-width: 100%; min-height: auto; max-height: 100%; height: auto; padding: 0px; margin: 0px;"><div id="post_detail" class="mx-wc-selected-elem" style="float: none; position: relative; top: 0px; left: 0px; margin: 0px; flex: unset; width: 100%; max-width: 100%; box-sizing: border-box;">
+<div class="singlepost">
+	<div class="posttitle">
+		<a id="cb_post_title_url" class="singleposttitle" href="https://www.cnblogs.com/h--d/p/6001366.html">【Maven】使用Maven构建多模块项目</a>
+	</div>
+	<div id="cnblogs_post_body" class="blogpost-body"><h3>Maven多模块项目</h3>
+<p>　　Maven多模块项目,适用于一些比较大的项目，通过合理的模块拆分，实现代码的复用，便于维护和管理。尤其是一些开源框架，也是采用多模块的方式，提供插件集成，用户可以根据需要配置指定的模块。</p>
+<p>　　项目结构如下：</p>
+<p>&nbsp;&nbsp;　　　　test-hd-parent&nbsp;　　(父级)<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 　　　　&nbsp; ---pom.xml<br>&nbsp;&nbsp;&nbsp;&nbsp; &nbsp; 　　　　&nbsp; ---test-hd-api&nbsp;&nbsp;&nbsp;　　　&nbsp;&nbsp;&nbsp; (第三方接口层)<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &nbsp;　　　　　　&nbsp; ----pom.xml&nbsp;&nbsp; &nbsp;<br>&nbsp;&nbsp;&nbsp; 　　　　　&nbsp; ---test-hd-foundation&nbsp;&nbsp;&nbsp;&nbsp; (基础工具层)<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &nbsp;　　　　　　&nbsp; ----pom.xml<br>&nbsp;&nbsp;&nbsp;&nbsp; &nbsp; 　　　　&nbsp; ---test-hd-resource　&nbsp;&nbsp;&nbsp; (资源层)&nbsp;<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &nbsp;&nbsp; 　　　　　　----pom.xml<br>&nbsp;&nbsp;&nbsp;&nbsp; &nbsp; 　　　　&nbsp; ---test-hd-service&nbsp;&nbsp;　　&nbsp;&nbsp; (逻辑业务层)<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &nbsp;　　　　　　&nbsp; ----pom.xml<br>&nbsp;&nbsp;&nbsp; 　　　　　 &nbsp;---test-hd-modules&nbsp;&nbsp;　　&nbsp;(web层)<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 　　　　　　----pom.xml<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;　　　　 　　&nbsp; 　　---test-hd-www&nbsp;&nbsp;&nbsp;　　&nbsp; 　　(web模块1)<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; 　　　　　&nbsp; 　　 ----pom.xml<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;　　　　 　　&nbsp; 　　---test-hd-admin&nbsp;　　&nbsp;&nbsp; 　　(web模块2)<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; 　　　　　&nbsp;&nbsp;　　 ----pom.xml　　　　　</p>
+<h3>创建一个父maven工程</h3>
+<ul>
+<li>　　新建一个maven项目，选择存储位置，并选择创建一个简单的maven工程</li>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</ul>
+<p>　　　　<img src="assets/1550129554-6a6589afe1cfe884a934b9d4391d7971.png" alt=""><img src="assets/1550129554-9895a1d3e4b8f657c838c2fa4786a9f7.png" alt=""></p>
+<ul>
+<li>　　输入Group Id、Artifact Id、Packaging，packaging选择pom包</li>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</ul>
+<p>　　　　<img src="assets/1550129554-0466768ef4708d8fc63f677e5bca3b47.png" alt=""></p>
+<ul>
+<li>　　生成父工程，pom.xml如下</li>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</ul>
+<p>　　　　<img src="assets/1550129554-2db5d1906fc81e12f8891f940540d759.png" alt=""></p>
+<ul>
+<li>　　删除工程中的src 目录</li>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</ul>
+<p>　　　　<img src="assets/1550129554-f64ce8eb14673ea7ed72355548df2e32.png" alt=""></p>
+<h3>创建子模块</h3>
+<ul>
+<li>　　右击父工程名---》New---》Project，然后选择新建一个maven module工程</li>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</ul>
+<p>　　　　<img src="assets/1550129554-5648aca9defff34ace9cfda78a64cae0.png" alt=""><img src="assets/1550129554-5430db3592758f208ea1fae024443b7e.png" alt=""></p>
+<ul>
+<li>　　设置子工程名以及父工程，再设置快速创建模式</li>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</ul>
+<p>　　　　<img src="assets/1550129554-81cfdc31f8befecd0c72f13edf41c94b.png" alt=""><img src="assets/1550129554-ffa2a9584b965f00ef13a34797824f09.png" alt=""></p>
+<ul>
+<li>　　得到子工程（test-hd-api，第三方接口层），设置编译的jdk</li>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</ul>
+<p>　　　　<img src="assets/1550129554-3fc132dfcaa7365cacc8df20f5cda427.png" alt=""><img src="assets/1550129554-f4d6fdd8615a077a0b0f89fac4cd79cb.png" alt=""></p>
+<ul>
+<li>　　同理设置，子模块：test-hd-foundation(基础工具层)、test-hd-resource(资源层)&nbsp;、test-hd-service(逻辑业务层)</li>
+<li>　　新建test-hd-modules&nbsp;(web层)，选择创建一个a simple project，输入Group Id、Artifact Id、Packaging，packaging选择pom包</li>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</ul>
+<p>&nbsp;&nbsp;&nbsp; 　　　　<img src="assets/1550129554-395a6ef62e6984418e56b4d2fee8b3b4.png" alt=""><img src="assets/1550129554-e7f43e84c69b5ccf8b3e278d7492a9c9.png" alt=""></p>
+<h3>创建web子模块</h3>
+<ul>
+<li>　　web子模块在建在test-hd-modules&nbsp;(web层)里面，右击test-hd-modules&nbsp;工程名---》New---》Project，然后选择新建一个maven module工程，设置子工程名以及父工程，选择新建web项目</li>
+
+
+
+
+
+
+
+
+
+
+
+
+</ul>
+<p>　　　　<img src="assets/1550129554-5f2b73e5aff31185af7ed22ba4245ac2.png" alt=""></p>
+<ul>
+<li>　　配置maven web项目，参照：<a href="http://www.cnblogs.com/h--d/p/6000778.html" target="_blank">【Maven】Eclipse 使用Maven创建Java Web项目</a></li>
+<li>　　同理可以配置其他的web子模块&nbsp;&nbsp; test-hd-admin(web模块2)</li>
+
+
+
+
+
+
+
+
+
+
+</ul>
+<p>　　　　<img src="assets/1550129554-625de412292efaf76e73b4b5ead6222e.png" alt=""></p>
+<p>&nbsp;</p>
+<h3>配置个模块的依赖</h3>
+<ul>
+<li>　　在parent项目pom.xml中建立依赖管理（dependencyManagement）
+<div class="cnblogs_code"><div class="cnblogs_code_toolbar"><span class="cnblogs_code_copy"><a href="javascript:void(0);" onclick="copyCnblogsCode(this)" title="复制代码"><img src="assets/1550129554-48304ba5e6f9fe08f3fa1abda7d326ab.gif" alt="复制代码"></a></span></div>
+<pre><span style="color: #008080"> 1</span> <span style="color: #0000ff">&lt;</span><span style="color: #800000">project </span><span style="color: #ff0000">xmlns</span><span style="color: #0000ff">="http://maven.apache.org/POM/4.0.0"</span><span style="color: #ff0000"> xmlns:xsi</span><span style="color: #0000ff">="http://www.w3.org/2001/XMLSchema-instance"</span>
+<span style="color: #008080"> 2</span> <span style="color: #ff0000">    xsi:schemaLocation</span><span style="color: #0000ff">="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd"</span><span style="color: #0000ff">&gt;</span>
+<span style="color: #008080"> 3</span>     <span style="color: #0000ff">&lt;</span><span style="color: #800000">modelVersion</span><span style="color: #0000ff">&gt;</span>4.0.0<span style="color: #0000ff">&lt;/</span><span style="color: #800000">modelVersion</span><span style="color: #0000ff">&gt;</span>
+<span style="color: #008080"> 4</span>     <span style="color: #0000ff">&lt;</span><span style="color: #800000">groupId</span><span style="color: #0000ff">&gt;</span>com.hd<span style="color: #0000ff">&lt;/</span><span style="color: #800000">groupId</span><span style="color: #0000ff">&gt;</span>
+<span style="color: #008080"> 5</span>     <span style="color: #0000ff">&lt;</span><span style="color: #800000">artifactId</span><span style="color: #0000ff">&gt;</span>test-hd-parent<span style="color: #0000ff">&lt;/</span><span style="color: #800000">artifactId</span><span style="color: #0000ff">&gt;</span>
+<span style="color: #008080"> 6</span>     <span style="color: #0000ff">&lt;</span><span style="color: #800000">version</span><span style="color: #0000ff">&gt;</span>0.0.1-SNAPSHOT<span style="color: #0000ff">&lt;/</span><span style="color: #800000">version</span><span style="color: #0000ff">&gt;</span>
+<span style="color: #008080"> 7</span>     <span style="color: #0000ff">&lt;</span><span style="color: #800000">packaging</span><span style="color: #0000ff">&gt;</span>pom<span style="color: #0000ff">&lt;/</span><span style="color: #800000">packaging</span><span style="color: #0000ff">&gt;</span>
+<span style="color: #008080"> 8</span>     <span style="color: #0000ff">&lt;</span><span style="color: #800000">modules</span><span style="color: #0000ff">&gt;</span>
+<span style="color: #008080"> 9</span>         <span style="color: #0000ff">&lt;</span><span style="color: #800000">module</span><span style="color: #0000ff">&gt;</span>test-hd-api<span style="color: #0000ff">&lt;/</span><span style="color: #800000">module</span><span style="color: #0000ff">&gt;</span>
+<span style="color: #008080">10</span>         <span style="color: #0000ff">&lt;</span><span style="color: #800000">module</span><span style="color: #0000ff">&gt;</span>test-hd-service<span style="color: #0000ff">&lt;/</span><span style="color: #800000">module</span><span style="color: #0000ff">&gt;</span>
+<span style="color: #008080">11</span>         <span style="color: #0000ff">&lt;</span><span style="color: #800000">module</span><span style="color: #0000ff">&gt;</span>test-hd-resource<span style="color: #0000ff">&lt;/</span><span style="color: #800000">module</span><span style="color: #0000ff">&gt;</span>
+<span style="color: #008080">12</span>         <span style="color: #0000ff">&lt;</span><span style="color: #800000">module</span><span style="color: #0000ff">&gt;</span>test-hd-foundation<span style="color: #0000ff">&lt;/</span><span style="color: #800000">module</span><span style="color: #0000ff">&gt;</span>
+<span style="color: #008080">13</span>         <span style="color: #0000ff">&lt;</span><span style="color: #800000">module</span><span style="color: #0000ff">&gt;</span>test-hd-modules<span style="color: #0000ff">&lt;/</span><span style="color: #800000">module</span><span style="color: #0000ff">&gt;</span>
+<span style="color: #008080">14</span>     <span style="color: #0000ff">&lt;/</span><span style="color: #800000">modules</span><span style="color: #0000ff">&gt;</span>
+<span style="color: #008080">15</span> 
+<span style="color: #008080">16</span> 
+<span style="color: #008080">17</span>     <span style="color: #008000">&lt;!--</span><span style="color: #008000"> maven依赖 </span><span style="color: #008000">--&gt;</span>
+<span style="color: #008080">18</span>     <span style="color: #0000ff">&lt;</span><span style="color: #800000">dependencyManagement</span><span style="color: #0000ff">&gt;</span>
+<span style="color: #008080">19</span> 
+<span style="color: #008080">20</span>         <span style="color: #0000ff">&lt;</span><span style="color: #800000">dependencies</span><span style="color: #0000ff">&gt;</span>
+<span style="color: #008080">21</span>             <span style="color: #008000">&lt;!--</span><span style="color: #008000"> hd </span><span style="color: #008000">--&gt;</span>
+<span style="color: #008080">22</span>             <span style="color: #0000ff">&lt;</span><span style="color: #800000">dependency</span><span style="color: #0000ff">&gt;</span>
+<span style="color: #008080">23</span>                 <span style="color: #0000ff">&lt;</span><span style="color: #800000">groupId</span><span style="color: #0000ff">&gt;</span>com.hd<span style="color: #0000ff">&lt;/</span><span style="color: #800000">groupId</span><span style="color: #0000ff">&gt;</span>
+<span style="color: #008080">24</span>                 <span style="color: #0000ff">&lt;</span><span style="color: #800000">artifactId</span><span style="color: #0000ff">&gt;</span>test-hd-api<span style="color: #0000ff">&lt;/</span><span style="color: #800000">artifactId</span><span style="color: #0000ff">&gt;</span>
+<span style="color: #008080">25</span>                 <span style="color: #0000ff">&lt;</span><span style="color: #800000">version</span><span style="color: #0000ff">&gt;</span>0.0.1-SNAPSHOT<span style="color: #0000ff">&lt;/</span><span style="color: #800000">version</span><span style="color: #0000ff">&gt;</span>
+<span style="color: #008080">26</span>             <span style="color: #0000ff">&lt;/</span><span style="color: #800000">dependency</span><span style="color: #0000ff">&gt;</span>
+<span style="color: #008080">27</span> 
+<span style="color: #008080">28</span>             <span style="color: #0000ff">&lt;</span><span style="color: #800000">dependency</span><span style="color: #0000ff">&gt;</span>
+<span style="color: #008080">29</span>                 <span style="color: #0000ff">&lt;</span><span style="color: #800000">groupId</span><span style="color: #0000ff">&gt;</span>com.hd<span style="color: #0000ff">&lt;/</span><span style="color: #800000">groupId</span><span style="color: #0000ff">&gt;</span>
+<span style="color: #008080">30</span>                 <span style="color: #0000ff">&lt;</span><span style="color: #800000">artifactId</span><span style="color: #0000ff">&gt;</span>test-hd-service<span style="color: #0000ff">&lt;/</span><span style="color: #800000">artifactId</span><span style="color: #0000ff">&gt;</span>
+<span style="color: #008080">31</span>                 <span style="color: #0000ff">&lt;</span><span style="color: #800000">version</span><span style="color: #0000ff">&gt;</span>0.0.1-SNAPSHOT<span style="color: #0000ff">&lt;/</span><span style="color: #800000">version</span><span style="color: #0000ff">&gt;</span>
+<span style="color: #008080">32</span>             <span style="color: #0000ff">&lt;/</span><span style="color: #800000">dependency</span><span style="color: #0000ff">&gt;</span>
+<span style="color: #008080">33</span> 
+<span style="color: #008080">34</span>             <span style="color: #0000ff">&lt;</span><span style="color: #800000">dependency</span><span style="color: #0000ff">&gt;</span>
+<span style="color: #008080">35</span>                 <span style="color: #0000ff">&lt;</span><span style="color: #800000">groupId</span><span style="color: #0000ff">&gt;</span>com.hd<span style="color: #0000ff">&lt;/</span><span style="color: #800000">groupId</span><span style="color: #0000ff">&gt;</span>
+<span style="color: #008080">36</span>                 <span style="color: #0000ff">&lt;</span><span style="color: #800000">artifactId</span><span style="color: #0000ff">&gt;</span>test-hd-resource<span style="color: #0000ff">&lt;/</span><span style="color: #800000">artifactId</span><span style="color: #0000ff">&gt;</span>
+<span style="color: #008080">37</span>                 <span style="color: #0000ff">&lt;</span><span style="color: #800000">version</span><span style="color: #0000ff">&gt;</span>0.0.1-SNAPSHOT<span style="color: #0000ff">&lt;/</span><span style="color: #800000">version</span><span style="color: #0000ff">&gt;</span>
+<span style="color: #008080">38</span>             <span style="color: #0000ff">&lt;/</span><span style="color: #800000">dependency</span><span style="color: #0000ff">&gt;</span>
+<span style="color: #008080">39</span> 
+<span style="color: #008080">40</span>             <span style="color: #0000ff">&lt;</span><span style="color: #800000">dependency</span><span style="color: #0000ff">&gt;</span>
+<span style="color: #008080">41</span>                 <span style="color: #0000ff">&lt;</span><span style="color: #800000">groupId</span><span style="color: #0000ff">&gt;</span>com.hd<span style="color: #0000ff">&lt;/</span><span style="color: #800000">groupId</span><span style="color: #0000ff">&gt;</span>
+<span style="color: #008080">42</span>                 <span style="color: #0000ff">&lt;</span><span style="color: #800000">artifactId</span><span style="color: #0000ff">&gt;</span>test-hd-foundation<span style="color: #0000ff">&lt;/</span><span style="color: #800000">artifactId</span><span style="color: #0000ff">&gt;</span>
+<span style="color: #008080">43</span>                 <span style="color: #0000ff">&lt;</span><span style="color: #800000">version</span><span style="color: #0000ff">&gt;</span>0.0.1-SNAPSHOT<span style="color: #0000ff">&lt;/</span><span style="color: #800000">version</span><span style="color: #0000ff">&gt;</span>
+<span style="color: #008080">44</span>             <span style="color: #0000ff">&lt;/</span><span style="color: #800000">dependency</span><span style="color: #0000ff">&gt;</span>
+<span style="color: #008080">45</span> 
+<span style="color: #008080">46</span>             <span style="color: #008000">&lt;!--</span><span style="color: #008000"> Servlet </span><span style="color: #008000">--&gt;</span>
+<span style="color: #008080">47</span>             <span style="color: #0000ff">&lt;</span><span style="color: #800000">dependency</span><span style="color: #0000ff">&gt;</span>
+<span style="color: #008080">48</span>                 <span style="color: #0000ff">&lt;</span><span style="color: #800000">groupId</span><span style="color: #0000ff">&gt;</span>javax.servlet<span style="color: #0000ff">&lt;/</span><span style="color: #800000">groupId</span><span style="color: #0000ff">&gt;</span>
+<span style="color: #008080">49</span>                 <span style="color: #0000ff">&lt;</span><span style="color: #800000">artifactId</span><span style="color: #0000ff">&gt;</span>javax.servlet-api<span style="color: #0000ff">&lt;/</span><span style="color: #800000">artifactId</span><span style="color: #0000ff">&gt;</span>
+<span style="color: #008080">50</span>                 <span style="color: #0000ff">&lt;</span><span style="color: #800000">version</span><span style="color: #0000ff">&gt;</span>3.0.1<span style="color: #0000ff">&lt;/</span><span style="color: #800000">version</span><span style="color: #0000ff">&gt;</span>
+<span style="color: #008080">51</span>                 <span style="color: #0000ff">&lt;</span><span style="color: #800000">scope</span><span style="color: #0000ff">&gt;</span>provided<span style="color: #0000ff">&lt;/</span><span style="color: #800000">scope</span><span style="color: #0000ff">&gt;</span>
+<span style="color: #008080">52</span>             <span style="color: #0000ff">&lt;/</span><span style="color: #800000">dependency</span><span style="color: #0000ff">&gt;</span>
+<span style="color: #008080">53</span>             <span style="color: #0000ff">&lt;</span><span style="color: #800000">dependency</span><span style="color: #0000ff">&gt;</span>
+<span style="color: #008080">54</span>                 <span style="color: #0000ff">&lt;</span><span style="color: #800000">groupId</span><span style="color: #0000ff">&gt;</span>javax.servlet.jsp<span style="color: #0000ff">&lt;/</span><span style="color: #800000">groupId</span><span style="color: #0000ff">&gt;</span>
+<span style="color: #008080">55</span>                 <span style="color: #0000ff">&lt;</span><span style="color: #800000">artifactId</span><span style="color: #0000ff">&gt;</span>jsp-api<span style="color: #0000ff">&lt;/</span><span style="color: #800000">artifactId</span><span style="color: #0000ff">&gt;</span>
+<span style="color: #008080">56</span>                 <span style="color: #0000ff">&lt;</span><span style="color: #800000">version</span><span style="color: #0000ff">&gt;</span>2.2<span style="color: #0000ff">&lt;/</span><span style="color: #800000">version</span><span style="color: #0000ff">&gt;</span>
+<span style="color: #008080">57</span>                 <span style="color: #0000ff">&lt;</span><span style="color: #800000">scope</span><span style="color: #0000ff">&gt;</span>provided<span style="color: #0000ff">&lt;/</span><span style="color: #800000">scope</span><span style="color: #0000ff">&gt;</span>
+<span style="color: #008080">58</span>             <span style="color: #0000ff">&lt;/</span><span style="color: #800000">dependency</span><span style="color: #0000ff">&gt;</span>
+<span style="color: #008080">59</span> 
+<span style="color: #008080">60</span>             <span style="color: #008000">&lt;!--</span><span style="color: #008000"> jstl </span><span style="color: #008000">--&gt;</span>
+<span style="color: #008080">61</span>             <span style="color: #0000ff">&lt;</span><span style="color: #800000">dependency</span><span style="color: #0000ff">&gt;</span>
+<span style="color: #008080">62</span>                 <span style="color: #0000ff">&lt;</span><span style="color: #800000">groupId</span><span style="color: #0000ff">&gt;</span>javax.servlet<span style="color: #0000ff">&lt;/</span><span style="color: #800000">groupId</span><span style="color: #0000ff">&gt;</span>
+<span style="color: #008080">63</span>                 <span style="color: #0000ff">&lt;</span><span style="color: #800000">artifactId</span><span style="color: #0000ff">&gt;</span>jstl<span style="color: #0000ff">&lt;/</span><span style="color: #800000">artifactId</span><span style="color: #0000ff">&gt;</span>
+<span style="color: #008080">64</span>                 <span style="color: #0000ff">&lt;</span><span style="color: #800000">version</span><span style="color: #0000ff">&gt;</span>1.2<span style="color: #0000ff">&lt;/</span><span style="color: #800000">version</span><span style="color: #0000ff">&gt;</span>
+<span style="color: #008080">65</span>             <span style="color: #0000ff">&lt;/</span><span style="color: #800000">dependency</span><span style="color: #0000ff">&gt;</span>
+<span style="color: #008080">66</span> 
+<span style="color: #008080">67</span>             <span style="color: #0000ff">&lt;</span><span style="color: #800000">dependency</span><span style="color: #0000ff">&gt;</span>
+<span style="color: #008080">68</span>                 <span style="color: #0000ff">&lt;</span><span style="color: #800000">groupId</span><span style="color: #0000ff">&gt;</span>taglibs<span style="color: #0000ff">&lt;/</span><span style="color: #800000">groupId</span><span style="color: #0000ff">&gt;</span>
+<span style="color: #008080">69</span>                 <span style="color: #0000ff">&lt;</span><span style="color: #800000">artifactId</span><span style="color: #0000ff">&gt;</span>standard<span style="color: #0000ff">&lt;/</span><span style="color: #800000">artifactId</span><span style="color: #0000ff">&gt;</span>
+<span style="color: #008080">70</span>                 <span style="color: #0000ff">&lt;</span><span style="color: #800000">version</span><span style="color: #0000ff">&gt;</span>1.1.2<span style="color: #0000ff">&lt;/</span><span style="color: #800000">version</span><span style="color: #0000ff">&gt;</span>
+<span style="color: #008080">71</span>             <span style="color: #0000ff">&lt;/</span><span style="color: #800000">dependency</span><span style="color: #0000ff">&gt;</span>
+<span style="color: #008080">72</span> 
+<span style="color: #008080">73</span>             <span style="color: #0000ff">&lt;</span><span style="color: #800000">dependency</span><span style="color: #0000ff">&gt;</span>
+<span style="color: #008080">74</span>                 <span style="color: #0000ff">&lt;</span><span style="color: #800000">groupId</span><span style="color: #0000ff">&gt;</span>junit<span style="color: #0000ff">&lt;/</span><span style="color: #800000">groupId</span><span style="color: #0000ff">&gt;</span>
+<span style="color: #008080">75</span>                 <span style="color: #0000ff">&lt;</span><span style="color: #800000">artifactId</span><span style="color: #0000ff">&gt;</span>junit<span style="color: #0000ff">&lt;/</span><span style="color: #800000">artifactId</span><span style="color: #0000ff">&gt;</span>
+<span style="color: #008080">76</span>                 <span style="color: #0000ff">&lt;</span><span style="color: #800000">version</span><span style="color: #0000ff">&gt;</span>3.8.1<span style="color: #0000ff">&lt;/</span><span style="color: #800000">version</span><span style="color: #0000ff">&gt;</span>
+<span style="color: #008080">77</span>                 <span style="color: #0000ff">&lt;</span><span style="color: #800000">scope</span><span style="color: #0000ff">&gt;</span>test<span style="color: #0000ff">&lt;/</span><span style="color: #800000">scope</span><span style="color: #0000ff">&gt;</span>
+<span style="color: #008080">78</span>             <span style="color: #0000ff">&lt;/</span><span style="color: #800000">dependency</span><span style="color: #0000ff">&gt;</span>
+<span style="color: #008080">79</span> 
+<span style="color: #008080">80</span>         <span style="color: #0000ff">&lt;/</span><span style="color: #800000">dependencies</span><span style="color: #0000ff">&gt;</span>
+<span style="color: #008080">81</span>     <span style="color: #0000ff">&lt;/</span><span style="color: #800000">dependencyManagement</span><span style="color: #0000ff">&gt;</span>
+<span style="color: #008080">82</span> 
+<span style="color: #008080">83</span> <span style="color: #0000ff">&lt;/</span><span style="color: #800000">project</span><span style="color: #0000ff">&gt;</span></pre>
+<div class="cnblogs_code_toolbar"><span class="cnblogs_code_copy"><a href="javascript:void(0);" onclick="copyCnblogsCode(this)" title="复制代码"><img src="assets/1550129554-48304ba5e6f9fe08f3fa1abda7d326ab.gif" alt="复制代码"></a></span></div></div>
+<p>&nbsp;</p>
+</li>
+<li>&nbsp;&nbsp;&nbsp; test-hd-foundation中的依赖
+<div class="cnblogs_code"><div class="cnblogs_code_toolbar"><span class="cnblogs_code_copy"><a href="javascript:void(0);" onclick="copyCnblogsCode(this)" title="复制代码"><img src="assets/1550129554-48304ba5e6f9fe08f3fa1abda7d326ab.gif" alt="复制代码"></a></span></div>
+<pre><span style="color: #008080"> 1</span> <span style="color: #0000ff">&lt;?</span><span style="color: #ff00ff">xml version="1.0"</span><span style="color: #0000ff">?&gt;</span>
+<span style="color: #008080"> 2</span> <span style="color: #0000ff">&lt;</span><span style="color: #800000">project
+</span><span style="color: #008080"> 3</span>     <span style="color: #ff0000">xsi:schemaLocation</span><span style="color: #0000ff">="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd"</span>
+<span style="color: #008080"> 4</span> <span style="color: #ff0000">    xmlns</span><span style="color: #0000ff">="http://maven.apache.org/POM/4.0.0"</span><span style="color: #ff0000"> xmlns:xsi</span><span style="color: #0000ff">="http://www.w3.org/2001/XMLSchema-instance"</span><span style="color: #0000ff">&gt;</span>
+<span style="color: #008080"> 5</span>     <span style="color: #0000ff">&lt;</span><span style="color: #800000">modelVersion</span><span style="color: #0000ff">&gt;</span>4.0.0<span style="color: #0000ff">&lt;/</span><span style="color: #800000">modelVersion</span><span style="color: #0000ff">&gt;</span>
+<span style="color: #008080"> 6</span>     <span style="color: #0000ff">&lt;</span><span style="color: #800000">parent</span><span style="color: #0000ff">&gt;</span>
+<span style="color: #008080"> 7</span>         <span style="color: #0000ff">&lt;</span><span style="color: #800000">groupId</span><span style="color: #0000ff">&gt;</span>com.hd<span style="color: #0000ff">&lt;/</span><span style="color: #800000">groupId</span><span style="color: #0000ff">&gt;</span>
+<span style="color: #008080"> 8</span>         <span style="color: #0000ff">&lt;</span><span style="color: #800000">artifactId</span><span style="color: #0000ff">&gt;</span>test-hd-parent<span style="color: #0000ff">&lt;/</span><span style="color: #800000">artifactId</span><span style="color: #0000ff">&gt;</span>
+<span style="color: #008080"> 9</span>         <span style="color: #0000ff">&lt;</span><span style="color: #800000">version</span><span style="color: #0000ff">&gt;</span>0.0.1-SNAPSHOT<span style="color: #0000ff">&lt;/</span><span style="color: #800000">version</span><span style="color: #0000ff">&gt;</span>
+<span style="color: #008080">10</span>     <span style="color: #0000ff">&lt;/</span><span style="color: #800000">parent</span><span style="color: #0000ff">&gt;</span>
+<span style="color: #008080">11</span>     <span style="color: #0000ff">&lt;</span><span style="color: #800000">artifactId</span><span style="color: #0000ff">&gt;</span>test-hd-foundation<span style="color: #0000ff">&lt;/</span><span style="color: #800000">artifactId</span><span style="color: #0000ff">&gt;</span>
+<span style="color: #008080">12</span> 
+<span style="color: #008080">13</span>     <span style="color: #0000ff">&lt;</span><span style="color: #800000">dependencies</span><span style="color: #0000ff">&gt;</span>
+<span style="color: #008080">14</span> 
+<span style="color: #008080">15</span>         <span style="color: #008000">&lt;!--</span><span style="color: #008000"> servlet </span><span style="color: #008000">--&gt;</span>
+<span style="color: #008080">16</span>         <span style="color: #0000ff">&lt;</span><span style="color: #800000">dependency</span><span style="color: #0000ff">&gt;</span>
+<span style="color: #008080">17</span>             <span style="color: #0000ff">&lt;</span><span style="color: #800000">groupId</span><span style="color: #0000ff">&gt;</span>javax.servlet<span style="color: #0000ff">&lt;/</span><span style="color: #800000">groupId</span><span style="color: #0000ff">&gt;</span>
+<span style="color: #008080">18</span>             <span style="color: #0000ff">&lt;</span><span style="color: #800000">artifactId</span><span style="color: #0000ff">&gt;</span>jstl<span style="color: #0000ff">&lt;/</span><span style="color: #800000">artifactId</span><span style="color: #0000ff">&gt;</span>
+<span style="color: #008080">19</span>         <span style="color: #0000ff">&lt;/</span><span style="color: #800000">dependency</span><span style="color: #0000ff">&gt;</span>
+<span style="color: #008080">20</span> 
+<span style="color: #008080">21</span>         <span style="color: #0000ff">&lt;</span><span style="color: #800000">dependency</span><span style="color: #0000ff">&gt;</span>
+<span style="color: #008080">22</span>             <span style="color: #0000ff">&lt;</span><span style="color: #800000">groupId</span><span style="color: #0000ff">&gt;</span>taglibs<span style="color: #0000ff">&lt;/</span><span style="color: #800000">groupId</span><span style="color: #0000ff">&gt;</span>
+<span style="color: #008080">23</span>             <span style="color: #0000ff">&lt;</span><span style="color: #800000">artifactId</span><span style="color: #0000ff">&gt;</span>standard<span style="color: #0000ff">&lt;/</span><span style="color: #800000">artifactId</span><span style="color: #0000ff">&gt;</span>
+<span style="color: #008080">24</span>         <span style="color: #0000ff">&lt;/</span><span style="color: #800000">dependency</span><span style="color: #0000ff">&gt;</span>
+<span style="color: #008080">25</span> 
+<span style="color: #008080">26</span>         <span style="color: #0000ff">&lt;</span><span style="color: #800000">dependency</span><span style="color: #0000ff">&gt;</span>
+<span style="color: #008080">27</span>             <span style="color: #0000ff">&lt;</span><span style="color: #800000">groupId</span><span style="color: #0000ff">&gt;</span>junit<span style="color: #0000ff">&lt;/</span><span style="color: #800000">groupId</span><span style="color: #0000ff">&gt;</span>
+<span style="color: #008080">28</span>             <span style="color: #0000ff">&lt;</span><span style="color: #800000">artifactId</span><span style="color: #0000ff">&gt;</span>junit<span style="color: #0000ff">&lt;/</span><span style="color: #800000">artifactId</span><span style="color: #0000ff">&gt;</span>
+<span style="color: #008080">29</span>         <span style="color: #0000ff">&lt;/</span><span style="color: #800000">dependency</span><span style="color: #0000ff">&gt;</span>
+<span style="color: #008080">30</span>     <span style="color: #0000ff">&lt;/</span><span style="color: #800000">dependencies</span><span style="color: #0000ff">&gt;</span>
+<span style="color: #008080">31</span> 
+<span style="color: #008080">32</span>     <span style="color: #0000ff">&lt;</span><span style="color: #800000">build</span><span style="color: #0000ff">&gt;</span>
+<span style="color: #008080">33</span>         <span style="color: #0000ff">&lt;</span><span style="color: #800000">plugins</span><span style="color: #0000ff">&gt;</span>
+<span style="color: #008080">34</span>             <span style="color: #008000">&lt;!--</span><span style="color: #008000"> define the project compile level </span><span style="color: #008000">--&gt;</span>
+<span style="color: #008080">35</span>             <span style="color: #0000ff">&lt;</span><span style="color: #800000">plugin</span><span style="color: #0000ff">&gt;</span>
+<span style="color: #008080">36</span>                 <span style="color: #0000ff">&lt;</span><span style="color: #800000">groupId</span><span style="color: #0000ff">&gt;</span>org.apache.maven.plugins<span style="color: #0000ff">&lt;/</span><span style="color: #800000">groupId</span><span style="color: #0000ff">&gt;</span>
+<span style="color: #008080">37</span>                 <span style="color: #0000ff">&lt;</span><span style="color: #800000">artifactId</span><span style="color: #0000ff">&gt;</span>maven-compiler-plugin<span style="color: #0000ff">&lt;/</span><span style="color: #800000">artifactId</span><span style="color: #0000ff">&gt;</span>
+<span style="color: #008080">38</span>                 <span style="color: #0000ff">&lt;</span><span style="color: #800000">version</span><span style="color: #0000ff">&gt;</span>2.3.2<span style="color: #0000ff">&lt;/</span><span style="color: #800000">version</span><span style="color: #0000ff">&gt;</span>
+<span style="color: #008080">39</span>                 <span style="color: #0000ff">&lt;</span><span style="color: #800000">configuration</span><span style="color: #0000ff">&gt;</span>
+<span style="color: #008080">40</span>                     <span style="color: #0000ff">&lt;</span><span style="color: #800000">source</span><span style="color: #0000ff">&gt;</span>1.7<span style="color: #0000ff">&lt;/</span><span style="color: #800000">source</span><span style="color: #0000ff">&gt;</span>
+<span style="color: #008080">41</span>                     <span style="color: #0000ff">&lt;</span><span style="color: #800000">target</span><span style="color: #0000ff">&gt;</span>1.7<span style="color: #0000ff">&lt;/</span><span style="color: #800000">target</span><span style="color: #0000ff">&gt;</span>
+<span style="color: #008080">42</span>                 <span style="color: #0000ff">&lt;/</span><span style="color: #800000">configuration</span><span style="color: #0000ff">&gt;</span>
+<span style="color: #008080">43</span>             <span style="color: #0000ff">&lt;/</span><span style="color: #800000">plugin</span><span style="color: #0000ff">&gt;</span>
+<span style="color: #008080">44</span>         <span style="color: #0000ff">&lt;/</span><span style="color: #800000">plugins</span><span style="color: #0000ff">&gt;</span>
+<span style="color: #008080">45</span>     <span style="color: #0000ff">&lt;/</span><span style="color: #800000">build</span><span style="color: #0000ff">&gt;</span>
+<span style="color: #008080">46</span> <span style="color: #0000ff">&lt;/</span><span style="color: #800000">project</span><span style="color: #0000ff">&gt;</span></pre>
+<div class="cnblogs_code_toolbar"><span class="cnblogs_code_copy"><a href="javascript:void(0);" onclick="copyCnblogsCode(this)" title="复制代码"><img src="assets/1550129554-48304ba5e6f9fe08f3fa1abda7d326ab.gif" alt="复制代码"></a></span></div></div>
+<p>&nbsp;</p>
+</li>
+<li>&nbsp;&nbsp;&nbsp; test-hd-api中的依赖关系
+<div class="cnblogs_code"><img id="code_img_closed_85252e03-0f88-4f6f-bad7-531b5a608208" class="code_img_closed" src="assets/1550129554-8f900a89c6347c561fdf2122f13be562.gif" alt=""><img id="code_img_opened_85252e03-0f88-4f6f-bad7-531b5a608208" class="code_img_opened" style="display: none" src="assets/1550129554-961ddebeb323a10fe0623af514929fc1.gif" alt="">
+
+<span class="cnblogs_code_collapse">View Code</span></div>
+<p>&nbsp;</p>
+</li>
+<li>&nbsp;&nbsp;&nbsp; test-hd-resource中的依赖关系
+<div class="cnblogs_code"><img id="code_img_closed_f2d3a57c-590c-4a30-bcf6-751c891c1f2d" class="code_img_closed" src="assets/1550129554-8f900a89c6347c561fdf2122f13be562.gif" alt=""><img id="code_img_opened_f2d3a57c-590c-4a30-bcf6-751c891c1f2d" class="code_img_opened" style="display: none" src="assets/1550129554-961ddebeb323a10fe0623af514929fc1.gif" alt="">
+
+<span class="cnblogs_code_collapse">View Code</span></div>
+<p>&nbsp;</p>
+</li>
+<li>&nbsp;&nbsp;&nbsp; test-hd-service中的依赖关系
+<div class="cnblogs_code"><img id="code_img_closed_a3b39db5-6084-4f96-8fbf-8fdaff54e116" class="code_img_closed" src="assets/1550129554-8f900a89c6347c561fdf2122f13be562.gif" alt=""><img id="code_img_opened_a3b39db5-6084-4f96-8fbf-8fdaff54e116" class="code_img_opened" style="display: none" src="assets/1550129554-961ddebeb323a10fe0623af514929fc1.gif" alt="">
+
+<span class="cnblogs_code_collapse">View Code</span></div>
+<p>&nbsp;</p>
+</li>
+<li>　　test-hd-module中的依赖关系
+<div class="cnblogs_code"><img id="code_img_closed_f827a6f0-0d00-4c9e-80dc-2c6fe1b684c0" class="code_img_closed" src="assets/1550129554-8f900a89c6347c561fdf2122f13be562.gif" alt=""><img id="code_img_opened_f827a6f0-0d00-4c9e-80dc-2c6fe1b684c0" class="code_img_opened" style="display: none" src="assets/1550129554-961ddebeb323a10fe0623af514929fc1.gif" alt="">
+
+<span class="cnblogs_code_collapse">View Code</span></div>
+<p>&nbsp;</p>
+</li>
+<li>&nbsp;&nbsp;&nbsp; test-hd-www中的依赖关系
+<div class="cnblogs_code"><img id="code_img_closed_a0499572-b651-47e2-9c56-170c47dafabc" class="code_img_closed" src="assets/1550129554-8f900a89c6347c561fdf2122f13be562.gif" alt=""><img id="code_img_opened_a0499572-b651-47e2-9c56-170c47dafabc" class="code_img_opened" style="display: none" src="assets/1550129554-961ddebeb323a10fe0623af514929fc1.gif" alt="">
+
+<span class="cnblogs_code_collapse">View Code</span></div>
+<p>&nbsp;</p>
+</li>
+<li>&nbsp;&nbsp;&nbsp; 最后使用maven-update整个工程，右击父工程名--》Maven--》Update Project</li>
+</ul>
+<p>　　　　<img src="assets/1550129554-b224c5ac7776f511bafdb0c6ea0c3502.png" alt=""></p>
+<h3>打包和发布</h3>
+<ul>
+<li>　　打包，右击父工程名 test-hd-parent----&gt;Run As---&gt;Maven Install</li>
+</ul>
+<p>&nbsp;　　<img src="assets/1550129554-c3e78963bc1464458474b8b277c8f044.png" alt=""><img src="assets/1550129554-c9b7fc65f21ded91fdf1b3186d5cef38.png" alt=""></p>
+<p>&nbsp;</p>
+<ul>
+<li>　　打包web子工程，右击工程名test-hd-www---&gt;Run As ---&gt; Maven Build...---&gt; Goals: clean package---&gt;Run</li>
+</ul>
+<p>　　　　<img src="assets/1550129554-6c8be7e29107d4d95b7423189b4067fe.png" alt=""><img src="assets/1550129554-bc3534ae27261cc33b132eec372c046b.png" alt="">　　</p>
+<p>　　　　　　<img src="assets/1550129554-fd22ba6dd5e28528858d4d82abbffc6e.png" alt=""></p>
+<p>&nbsp;</p>
+<ul>
+<li>　　右击工程名test-hd-www，进行刷新，找到war包，放到tomcat的webapps中，启动tomcat，即可访问工程http://localhost:8080/test-hd-www</li>
+</ul>
+<p>　　　　<img src="assets/1550129554-b531e450c4c0367d1cb3751158549fb3.png" alt=""><img src="assets/1550129554-919be2cde616de3417db0256072539fd.png" alt=""></p>
+<ul>
+<li>　　可以去tomcat下面webapps》test-hd-www》WEB-INF》lib中，看到引用的jar包</li>
+</ul>
+<p>　　　　<img src="assets/1550129554-9b3e0294a7fe141d8c156a0b0db03232.png" alt=""></p>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<p>&nbsp;　　　　</p>
+<p>　　　　</p>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<p>　　</p>
+<p>&nbsp;</p></div>
+  </body>
+</html>
