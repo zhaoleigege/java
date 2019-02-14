@@ -253,7 +253,7 @@ vim settings.xml
 
 ### 7.项目实例
 
-* [vertx的maven简单项目](../../code/maven)
+* [vertx的maven简单项目](https://github.com/zhaoleigege/java/tree/artifactory/code/maven)
 
 ### 8.maven多项目
 
