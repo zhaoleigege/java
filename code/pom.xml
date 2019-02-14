@@ -7,11 +7,18 @@
     <groupId>com.busekylin</groupId>
     <artifactId>java</artifactId>
     <packaging>pom</packaging>
-    <version>1.0</version>
+    <version>1.0.RELEASE</version>
+
     <modules>
         <module>shutdown</module>
         <module>maven</module>
     </modules>
 
-
+    <distributionManagement>
+        <repository>
+            <id>central</id>
+            <name>292158e61c37-releases</name>
+            <url>http://192.168.123.46:8081/artifactory/libs-release-local</url>
+        </repository>
+    </distributionManagement>
 </project>
