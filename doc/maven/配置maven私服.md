@@ -28,7 +28,7 @@
    2. 启动容器
 
       ```shell
-      docker run --name artifactory-oss -d -v artifactory:/var/opt/jfrog/artifactory -p 8081:8081 docker.bintray.io/jfrog/artifactory-oss:latest
+      docker run --name artifactory-oss -d --restart=unless-stopped -v artifactory:/var/opt/jfrog/artifactory -p 8081:8081 docker.bintray.io/jfrog/artifactory-oss:latest
       ```
 
    3. 配置artifactory仓库
