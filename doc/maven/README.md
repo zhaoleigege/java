@@ -31,7 +31,7 @@ vim settings.xml
       <url>http://maven.aliyun.com/nexus/content/groups/public/</url>
       <mirrorOf>central</mirrorOf>        
     </mirror>
-<mirrors>
+</mirrors>
 ```
 
 ###  3. 使用idea创建一个maven项目
