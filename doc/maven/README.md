@@ -226,6 +226,7 @@ vim settings.xml
 * `mvn clean test`：运行清理和测试
 
 * `mvn clean package`：运行清理和打包，生成jar包
+
    `mvn clean package -Dmaven.test.skip=true`：打包时跳过单元测试
 
 * `mvn clean install`：运行清理和安装，会将打好的包安装到本地仓库中，以便其他的项目可以调用
