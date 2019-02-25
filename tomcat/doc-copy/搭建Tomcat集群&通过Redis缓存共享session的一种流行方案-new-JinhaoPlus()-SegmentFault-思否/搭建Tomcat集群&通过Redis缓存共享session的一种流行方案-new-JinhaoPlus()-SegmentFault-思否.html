@@ -1,0 +1,289 @@
+
+<!DOCTYPE html>
+<html>
+  <!-- OriginalSrc: https://segmentfault.com/a/1190000009591087 -->
+  <head>
+    <meta http-equiv="Content-Type" content="text/html"; charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <title>搭建Tomcat集群&通过Redis缓存共享session的一种流行方案 - new JinhaoPlus() - SegmentFault 思否</title>
+    
+<link rel="stylesheet" href="assets/1551065584-7e01b850d80f6ffb09908b6391ba3ba9.css">
+
+<link rel="stylesheet" href="assets/1551065584-326add4679eff893654fdd9f62dd5d10.css">
+
+<link rel="stylesheet" href="assets/1551065584-cec6cf024eb51563087deeccf9df8402.css">
+<style>
+
+</style>
+<style>
+@media print {#ghostery-purple-box {display:none !important}}
+</style>
+<style>
+
+</style>
+<style>
+object,embed{                -webkit-animation-duration:.001s;-webkit-animation-name:playerInserted;                -ms-animation-duration:.001s;-ms-animation-name:playerInserted;                -o-animation-duration:.001s;-o-animation-name:playerInserted;                animation-duration:.001s;animation-name:playerInserted;}                @-webkit-keyframes playerInserted{from{opacity:0.99;}to{opacity:1;}}                @-ms-keyframes playerInserted{from{opacity:0.99;}to{opacity:1;}}                @-o-keyframes playerInserted{from{opacity:0.99;}to{opacity:1;}}                @keyframes playerInserted{from{opacity:0.99;}to{opacity:1;}}
+</style>
+<style>
+
+                    .job-recommend-area a:not(:last-of-type) {margin-bottom:10px; display: block}
+                    .job-recommend-area a:hover {text-decoration: none;}
+                
+</style>
+<style>
+
+                    .job-recommend {margin-bottom: 30px;}
+                    .job-title {
+                        font-size: 14px;
+                        color: #017E66;
+                        font-weight: 500;
+                        background: #BFE6D7;
+                        margin: 0;
+                        padding-top: 6px;
+                        padding-bottom: 6px;
+                        text-align: center;
+                    }
+                    .job-recommend-area {
+                      padding: 13px;
+                      border: 3px solid #EBF7F3;
+                      border-top: none;
+                    }
+                    
+</style>
+
+    <style class="mx-wc-style">
+      .mx-wc-main img {max-width: 100%;}
+      .mx-wc-main{
+        box-sizing: content-box;
+        background-color: rgb(255, 255, 255) !important;
+        margin: 0 auto;
+        max-width: 900px;
+        padding: 15px 15px 80px 15px;
+      }
+
+      .clipping-information{
+        text-align: left;
+        margin-top: 20px;
+        background-color: #eeeeee !important;
+        padding: 15px;
+        border-radius: 4px;
+        color: #333;
+        font-size: 14px !important;
+        line-height: 22px !important;
+      }
+      .clipping-information a {
+        color: blue !important;
+        text-decoration: underline !important;
+      }
+      .clipping-information label {
+        display: inline;
+        text-transform: none;
+      }
+      .clipping-information label > code {
+        padding: 2px 8px;
+        background-color: rgba(200, 200, 200, 0.7)!important;
+        font-size: 14px;
+      }
+
+    </style>
+  </head>
+  <body style="background-color: #464646 !important; min-height: 100%; height: auto;" id="" class="blog-post ">
+    <div class="mx-wc-main">
+      <DIV class="wrap" data-blogid="1200000002403284" style="display: block; float: none; position: relative; top: 0; left: 0; border: 0px; width: 100%; min-width:100%; max-width: 100%; min-height: auto; max-height: 100%; height: auto; padding: 0px; margin: 0px;"><DIV class="container mt15" style="position:relativedisplay: block; float: none; position: relative; top: 0; left: 0; border: 0px; width: 100%; min-width:100%; max-width: 100%; min-height: auto; max-height: 100%; height: auto; padding: 0px; margin: 0px;"><DIV class="row" style="display: block; float: none; position: relative; top: 0; left: 0; border: 0px; width: 100%; min-width:100%; max-width: 100%; min-height: auto; max-height: 100%; height: auto; padding: 0px; margin: 0px;"><div class="col-xs-12 col-md-9 main mx-wc-selected-elem" style="float: none; position: relative; top: 0px; left: 0px; margin: 0px; flex: unset; width: 100%; max-width: 100%; box-sizing: border-box;">
+                                <ol class="breadcrumb mb15">
+                    <li><a href="https://segmentfault.com/blogs">专栏</a></li>
+                                        <li><a href="https://segmentfault.com/blog/jinhaoplus">new JinhaoPlus()</a></li>
+                                        <li class="active">文章详情</li>
+                </ol>
+                                <div class="post-topheader custom- pt0">
+                    <div class="mb20">
+                        <div class="block-for-right-border">
+                            <div class="row">
+                                <div class="col-md-12 col-sm-12 col-xs-12">
+                                
+
+                                    <div class="post-topheader__info" data-username="JinhaoPlus" data-userslug="jinhaoplus" data-useravatar="https://avatar-static.segmentfault.com/283/832/2838322507-1030000000494557_big64">
+
+
+                                        <div class="article__author clearfix">
+                                            <div class="article__authorleft">
+                                                <a href="https://segmentfault.com/u/jinhaoplus">
+                                                    <img class="avatar-40" src="assets/1551065584-46d2db78631bcd83e45cf4552519b99c" alt="JinhaoPlus">
+                                                </a>
+                                            </div>
+                                            <div class="article__authorright">
+                                                <div class="article__authormeta">
+                                                <a href="https://segmentfault.com/u/jinhaoplus" class="mr5"><strong>JinhaoPlus</strong></a>
+                                        
+                                                
+                                                                                                <img src="assets/1551065584-c5bc41f9be24971d994272e1aa1d8f03.svg" class="mr5"><span style="color:#BF7158" class="mr10">1.4k</span>
+
+                                                                                                发布于
+                                                <a href="https://segmentfault.com/blog/jinhaoplus">new JinhaoPlus()</a>
+                                                
+                                                
+                                                <span class="hidden-xs">
+                                                                                                                                                          <button type="button" class="btn btn-xs btn-success follow-article ml10" data-do="follow" data-type="blog" data-id="1200000002403284">关注专栏
+                                                       </button>
+                                                                                                                                                   </span>
+                                                </div>
+                                                
+                                                <span style="display: block">
+                                                    2017-05-29 发布
+                                                </span>
+                                            </div>
+                                        </div>
+
+                                        <h1 class="h1 post-topheader__info--title" id="articleTitle" data-id="1190000009591087">
+                                            <a href="https://segmentfault.com/a/1190000009591087"> 搭建Tomcat集群&amp;通过Redis缓存共享session的一种流行方案</a>
+                                        </h1>
+
+                                        <div class="content__tech hidden-xs">
+                                            <a href="https://segmentfault.com/a/1190000009591087" class="blog-type-common blog-type-0-before" target="_blank" data-content="
+                                                                                        翻译自 
+                                                                                        "></a>
+                                            
+                                            <ul class="taglist--inline inline-block article__title--tag mr10">
+                                                                                                    <li class="tagPopup mb5">
+                                                        <a class="tag" href="https://segmentfault.com/t/redis-cluster/blogs" data-toggle="popover" data-img="" data-placement="top" data-original-title="redis-cluster" data-id="1040000003478814">
+                                                                                                                      redis-cluster
+                                                        </a>
+                                                    </li>
+                                                                                                    <li class="tagPopup mb5">
+                                                        <a class="tag" href="https://segmentfault.com/t/redis/blogs" data-toggle="popover" data-img="https://avatar-static.segmentfault.com/169/991/1699917814-1040000000089431_big64" data-placement="top" data-original-title="redis" data-id="1040000000089431">
+                                                                                                                      redis
+                                                        </a>
+                                                    </li>
+                                                                                                    <li class="tagPopup mb5">
+                                                        <a class="tag" href="https://segmentfault.com/t/session%E6%8C%81%E4%B9%85%E5%8C%96/blogs" data-toggle="popover" data-img="" data-placement="top" data-original-title="session持久化" data-id="1040000002916498">
+                                                                                                                      session持久化
+                                                        </a>
+                                                    </li>
+                                                                                                    <li class="tagPopup mb5">
+                                                        <a class="tag" href="https://segmentfault.com/t/tomcat/blogs" data-toggle="popover" data-img="" data-placement="top" data-original-title="tomcat" data-id="1040000000090117">
+                                                                                                                      tomcat
+                                                        </a>
+                                                    </li>
+                                                                                            </ul>
+
+                                            <span>
+                                                13.9k 次阅读
+                                                &nbsp;·&nbsp;
+                                                读完需要 17 分钟 
+                                                                            </span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div><!-- end .post-topheader -->
+                
+                <div class="article fmt article__content" data-id="1190000009591087" data-license="sa">
+                    
+<h2 id="articleHeader0">为什么要共享session?</h2>
+<p>我们使用单台Tomcat的时候不会有共享sesssion的疑虑，只要使用Tomcat的默认配置即可，session即可存储在Tomcat上。</p>
+<p><span class="img-wrap"><img data-src="/img/remote/1460000009591090?w=1334&amp;h=574" src="assets/1551065584-ab45bd742bbc7c57afdf92f006ea597b" alt="" title="" style="cursor: pointer; display: inline;"></span></p>
+<p>但是随着业务的扩大，增加Tomcat节点构成Tomcat集群大势所趋，分布式带来了增加更大规模并发请求的优势，但是也随之到来了一个问题，每个Tomcat只存储来访问自己的请求产生的session，如果Tomcat-A已经为客户端C创建了会话session，那么Tomcat-B并不知道客户端已与集群中的Tomcat-A产生了会话，在访问时就会为C再创建一份session，如果是基于session的验证会话权限的接口(如用户登录认证后才可访问的数据接口)，将会导致在访问集群中不同节点的时候重复认证。session的不共享导致原来的会话管理机制在Tomcat集群中无法工作。</p>
+<p><span class="img-wrap"><img data-src="/img/remote/1460000009591091?w=1712&amp;h=757" src="assets/1551065584-c3951cbd77d43a0975381cad8fb31381" alt="" title="" style="cursor: pointer; display: inline;"></span></p>
+<p>所以，如果有一个Tomcat集群都能访问的公共session存取区就好了，基于这个概念，我们想到了使用Redis来做这个session公共存取区，这样子的话就有一个统一管理回话的地方了。回看我们上文提到的例子，如果Tomcat-A已经为客户端C创建了会话session，这个session信息会直接存储在公共的Redis里面，那么Tomcat-B就可以到公共session存储区里获得已为C产生的session，这样的结果是集群的公共session存取区在逻辑上就像一个tomcat的内部session存取区一样了。</p>
+<p><span class="img-wrap"><img data-src="/img/remote/1460000009591092?w=1882&amp;h=866" src="assets/1551065584-24aed5ffab1ca94a9c699b89d30653f1.svg" alt="" title="" style="cursor: pointer;"></span></p>
+<h2 id="articleHeader1">怎么做呢?</h2>
+<p>有了上述基本的概念，我们就要开始真正施行了。</p>
+<h3 id="articleHeader2">1. 持久化Tomcat Session到Redis中</h3>
+<p>Tomcat提供了一个开放的session管理和持久化的<code>org.apache.catalina.session.ManagerBase</code>，继承这个抽象类并做一些简单的配置，即可让你的session管理类接管Tomcat的session读取和持久化。当然，我们在这里使用了一个流行的开源项目：<br><a href="https://github.com/jcoleman/tomcat-redis-session-manager" rel="nofollow noreferrer" target="_blank">https://github.com/jcoleman/tomcat-redis-session-manager</a><br>，它已经为我们准备好了这样的一个管理类，只要将这个管理类配置在Tomcat中即可发挥功能。它可以帮助我们将tomcat的session存入我们指定的redis，甚至支持redis在sentinel模式调度的redis集群，稍后我们也将详述这样的redis集群该如何部署。</p>
+<p>使用这个项目非常简单，如果在Tomcat6或Tomcat7下部署，直接使用项目release出的jar文件到Tomcat的<code>lib</code>下即可，准确来说还需要引入它的其他几个依赖(括号中为建议的)：</p>
+<pre class="hljs css"><code><span class="hljs-selector-tag">tomcat-redis-session-manager-VERSION</span><span class="hljs-selector-class">.jar</span>(<span class="hljs-selector-tag">v1</span><span class="hljs-selector-class">.2</span>)
+<span class="hljs-selector-tag">commons-pool2-VERSION</span><span class="hljs-selector-class">.jar</span>(<span class="hljs-selector-tag">v2</span><span class="hljs-selector-class">.2</span>)
+<span class="hljs-selector-tag">jedis-VERSION</span><span class="hljs-selector-class">.jar</span>(<span class="hljs-selector-tag">v2</span><span class="hljs-selector-class">.5</span><span class="hljs-selector-class">.2</span>)
+</code></pre>
+<p>引入后需要在tomcat下修改<code>conf/context.xml</code>：</p>
+<pre class="hljs xml"><code><span class="hljs-tag">&lt;<span class="hljs-name">Valve</span> <span class="hljs-attr">className</span>=<span class="hljs-string">"com.orangefunction.tomcat.redissessions.RedisSessionHandlerValve"</span> /&gt;</span>
+<span class="hljs-tag">&lt;<span class="hljs-name">Manager</span> <span class="hljs-attr">className</span>=<span class="hljs-string">"com.orangefunction.tomcat.redissessions.RedisSessionManager"</span>
+         <span class="hljs-attr">host</span>=<span class="hljs-string">"{redis.host}"</span>
+         <span class="hljs-attr">port</span>=<span class="hljs-string">"{redis.port}"</span>
+         <span class="hljs-attr">database</span>=<span class="hljs-string">"{redis.dbnum}"</span>
+         <span class="hljs-attr">maxInactiveInterval</span>=<span class="hljs-string">"60"</span>/&gt;</span>
+</code></pre>
+<p>这样一来我们的tomcat即可把session的管理交由我们配置的redis来处理。</p>
+<p>需要注意的是，如果在Tomcat8下按照上述部署，会在启动时报错，笔者查看过原因，是<code>tomcat-redis-session-manager</code>最后更新的年代相隔较久，代码中使用的Tomcat api出现了过时删去的情况，在Tomcat8下会出现问题，如果想在Tomcat8下使用，需要自行对过时的api进行修改，替换成新的Tomcat api。笔者自己修改了未经严格验证的一个版本，可供使用Tomcat8的读者试用：<br><a href="https://github.com/jinhaoplus/tomcat-redis-session-manager" rel="nofollow noreferrer" target="_blank">https://github.com/jinhaoplus/tomcat-redis-session-manager</a></p>
+<h3 id="articleHeader3">2. nginx反向代理的负载均衡</h3>
+<p>虽然这不是本文的重点，但是使用负载均衡在搭建集群的过程中重要性不言而喻，使用nginx默认的轮询机制，我们可以将前端的浏览器请求转发到不同的Tomcat实例上。<br>首先来讲讲正向代理和反向代理，一言以蔽之：正向代理帮助内网client访问外网server用，反向代理将来自外网client的请求f转发到到内网server。<br>最实际的区别是使用二者时正向代理需要用户主动配置，而反向代理对用户透明，不需要用户做主动配置。<br>「代理」是指代人理事，即代理服务器是为其他人或机器服务的。<br>正向代理是替内网中的用户访问外网服务的（即代替用户去访问外网），用户和外网之间的沟通全部交由正向代理服务器完成，用户的请求不发给外网服务器而发给代理服务器让其代为处理，这个过程是隐藏用户的。<br>反向代理是为真正的服务节点机器服务的（即代替真正的服务节点机器去提供服务），代理服务器接收来自外界的请求，并将请求转给真正的服务节点机器，用户不与真正的机器打交道<br>，这个过程是隐藏真正的服务实例机器的。</p>
+<p>nginx可以作为高效的反向代理服务器，同时起到了负载均衡的作用。如果想要使用反向代理Tomcat集群的负载，方法也非常简单，只需要在其配置<code>nginx.conf</code>中将负载的Tomcat集群的实际地址加入upstream，并将locate导向配好的upstream即可：</p>
+<pre class="hljs properties"><code><span class="hljs-attr">http{</span>
+    <span class="hljs-attr">...</span>
+    <span class="hljs-attr">upstream</span> <span class="hljs-string">tomcats {</span>
+        <span class="hljs-attr">server</span>      <span class="hljs-string">&lt;tomcat1_ip&gt;:&lt;tomcat1_port&gt;;</span>
+        <span class="hljs-attr">server</span>      <span class="hljs-string">&lt;tomcat2_ip&gt;:&lt;tomcat2_port&gt;;</span>
+        <span class="hljs-attr">...</span>
+        <span class="hljs-attr">server</span>      <span class="hljs-string">&lt;tomcatn_ip&gt;:&lt;tomcatn_port&gt;;</span>
+      <span class="hljs-attr">}</span>
+    <span class="hljs-attr">...</span>
+    <span class="hljs-attr">server</span> <span class="hljs-string">{</span>
+        <span class="hljs-attr">listen</span>       <span class="hljs-string">80;</span>
+        <span class="hljs-attr">...</span>
+        <span class="hljs-attr">location</span> <span class="hljs-string">/ {</span>
+            <span class="hljs-attr">root</span>   <span class="hljs-string">html;</span>
+            <span class="hljs-attr">index</span>  <span class="hljs-string">index.html index.htm;</span>
+            <span class="hljs-attr">proxy_pass</span>      <span class="hljs-string">http://tomcats;</span>
+        <span class="hljs-attr">}</span>
+      <span class="hljs-attr">}</span>
+<span class="hljs-attr">}</span></code></pre>
+<p>默认的轮询机制将每次请求都发至不同的Tomcat实例上，以此实现负载均衡。</p>
+<h3 id="articleHeader4">3. 基于sentinel的redis集群搭建</h3>
+<p>上文介绍的方法其实已经可以搭建一个完整的Tomcat集群了，如果系统想要一个更安全可靠的环境，那么nginx其实也可以做集群，这里略去不说，我们想要说的是redis集群。</p>
+<p>上面我们已经说到redis是session的公共存储区，如果redis不幸挂掉的话将会导致致命的问题，因为无session源可取，Tomcat中有session读取的接口会直接报错。所以搭建一个redis集群还是很有必要的，幸好redis对分布式HA的搭建支持得很好，原生即有一套sentinel哨兵机制即可用。</p>
+<p>以sentinel模式启动的redis实例起到了监控者的作用，redis集群以master-slave的模式启动，消息不再直接发给redis实例，而是发给sentinel，由sentinel同步至所有的redis实例，如果出现redismaster实例挂掉的情况，会由sentinel发现，根据配置还可以由sentinel自己组成的集群去选举产生新的master，新的master将会承担起作用，起到了灾难自动回恢复的作用。</p>
+<p>这里来说一下sentinel集群的配置：<br>我们使用两个redis实例来组成master-slave，需要三个sentinel组成哨兵集群来监控两个redis实例，在master出现问题的时候选举产生新的master。<br>路径假设如下：<br><code>redis1</code><br><code>redis2</code><br><code>sentinel1</code><br><code>sentinel2</code><br><code>sentinel3</code></p>
+<p>配置<code>redis1/redis.conf</code>为master：</p>
+<pre class="hljs css"><code>    <span class="hljs-selector-tag">bind</span> 127<span class="hljs-selector-class">.0</span><span class="hljs-selector-class">.0</span><span class="hljs-selector-class">.1</span>
+    <span class="hljs-selector-tag">port</span> 6379</code></pre>
+<p>配置<code>redis2/redis.conf</code>为redis1的slave：</p>
+<pre class="hljs css"><code>    <span class="hljs-selector-tag">bind</span> 127<span class="hljs-selector-class">.0</span><span class="hljs-selector-class">.0</span><span class="hljs-selector-class">.1</span>
+    <span class="hljs-selector-tag">port</span> 6379
+    <span class="hljs-selector-tag">slaveof</span> &lt;<span class="hljs-selector-tag">redis1_ip</span>&gt; 6379
+</code></pre>
+<p>配置<code>sentinel1/redis-sentinel.conf</code>：</p>
+<pre class="hljs properties"><code>    <span class="hljs-attr">port</span> <span class="hljs-string">26379    </span>
+    <span class="hljs-attr">sentinel</span> <span class="hljs-string">monitor mymaster &lt;redis1_ip&gt; 6379 2</span>
+</code></pre>
+<p>指定redis1为master，slave信息会在启动后被sentinel监听到并自动写入到配置文件中，因此不需要手动写入，最后的quorum表示当有2个sentinel判断master挂掉的时候即可选举slave为新的master。</p>
+<p><code>sentinel2</code>，<code>sentinel3</code>配置相同。</p>
+<p>这样之后启动redis和sentinel集群，即可构建一个高可用的redis集群。可以尝试一下把<code>redis1</code>这个master挂掉，sentinel就会探查到并且在2个sentinel都探查到的时候即会选举产生新的master：</p>
+<pre class="hljs objectivec"><code><span class="hljs-meta"># +monitor master mymaster <span class="hljs-meta-string">&lt;redis1-ip&gt;</span> 6379 quorum 2</span>
+<span class="hljs-meta"># +sdown master mymaster <span class="hljs-meta-string">&lt;redis1-ip&gt;</span> 6379</span>
+
+</code></pre>
+<p>同时我们的Tomcat配置也将改为使用sentinel集群的版本：</p>
+<pre class="hljs xml"><code><span class="hljs-tag">&lt;<span class="hljs-name">Valve</span> <span class="hljs-attr">className</span>=<span class="hljs-string">"com.orangefunction.tomcat.redissessions.RedisSessionHandlerValve"</span> /&gt;</span>
+    <span class="hljs-tag">&lt;<span class="hljs-name">Manager</span> <span class="hljs-attr">className</span>=<span class="hljs-string">"com.orangefunction.tomcat.redissessions.RedisSessionManager"</span>
+         <span class="hljs-attr">sentinelMaster</span>=<span class="hljs-string">"mymaster"</span>
+         <span class="hljs-attr">sentinels</span>=<span class="hljs-string">"&lt;sentinel1-ip&gt;:26379,&lt;sentinel2-ip&gt;:26379,&lt;sentinel3-ip&gt;:26379"</span>
+         <span class="hljs-attr">maxInactiveInterval</span>=<span class="hljs-string">"60"</span>/&gt;</span></code></pre>
+<p>这个集群搭建完成后，我们的系统将会更为稳定：<br><span class="img-wrap"><img data-src="/img/remote/1460000009591093?w=1536&amp;h=630" src="assets/1551065584-ad0b661720e8711e0bae55b0f299c1fb" alt="" title="" style="cursor: pointer; display: inline;"></span></p>
+
+                </div>
+                                                
+                <div class="clearfix mt10">
+                    <ul class="article-operation list-inline pull-left mt15"><li><a target="_blank" href="https://creativecommons.org/licenses/by-nc-sa/4.0/"><img class="mb5" src="assets/1551065584-f9bb3c0239240218a03acbb8f5e88612.svg" height="20"></a></li><li class="dropdown js__content-ops hidden-xs" data-module="article" data-id="1190000009591087" data-typetext="文章"><a href="javascript:void(0);" class="dropdown-toggle text-muted" data-toggle="dropdown"><i class="fa fa-ellipsis-h" aria-hidden="true"></i></a></li></ul>
+                    <div class="pull-right mt-10 hidden-xs">
+                        <div class="widget-share__full" data-text="搭建Tomcat集群&amp;通过Redis缓存共享session的一种流行方案" data-url="https://segmentfault.com/a/1190000009591087" data-shorturl="http://sfau.lt/b5Ope7"><div class="widget-share-network sharer-0" style="display: block;"><ul class="sn-inline"><li data-network="weibo"><a href="javascript:void(0);" class="entypo-weibo icon-sn-weibo share-1" data-toggle="tooltip" data-placement="top" title="" data-original-title="分享至新浪微博">新浪微博</a></li><li data-network="wechart"><a href="javascript:void(0);" class="entypo-wechart icon-sn-weixin share-2" data-toggle="tooltip" data-placement="top" title="" data-original-title="分享至微信">微信</a></li><li data-network="twitter"><a href="javascript:void(0);" class="entypo-twitter icon-sn-twitter share-3" data-toggle="tooltip" data-placement="top" title="" data-original-title="分享至 Twitter">Twitter</a></li><li data-network="facebook"><a href="javascript:void(0);" class="entypo-facebook icon-sn-facebook share-4" data-toggle="tooltip" data-placement="top" title="" data-original-title="分享至 Facebook">Facebook</a></li></ul></div><a type="button" class="btn btn-sm shareMore btn-sn-more" data-toggle="popover" data-placement="top" data-url="https://segmentfault.com/a/1190000009591087" data-shorturl="http://sfau.lt/b5Ope7"><span class="icon-sn-dotted" data-original-title="" title=""></span></a></div>
+
+
+                    </div>
+                </div>
+                <div class="mt10 text-center mb30"><button type="button" id="mainLike" data-id="1190000009591087" class="btn btn-success btn-lg mr15 "><span id="mainLikeText">赞</span>&nbsp;&nbsp;<span class="seprator">|</span>&nbsp;&nbsp;
+                                <span id="mainLikeNum">5 </span></button><button type="button" id="mainBookmark" data-type="article" data-id="1190000009591087" class="btn btn-default btn-lg "><span id="mainBookmarkText">收藏</span>&nbsp;&nbsp;<span class="seprator">|</span>&nbsp;&nbsp;<span id="mainBookmarkNum">36</span></button></div>                
+                                
+
+                <h4 class="pt20 mb15 mt0 border-top">你可能感兴趣的</h4>
+
+                
+                <div class="mb15 block">
+                    
+                </div>
+
+                                <div id="paradigm-article-related"><div class="recommend-post mb30"><ul class="widget-links"><li><a href="http://segmentfault.com/a/1190000012684408" title="Rainbond最佳实践：Tomcat配置Redis实现Session共享" target="_blank">Rainbond最佳实践：Tomcat配置Redis实现Session共享</a><span class="text-muted">好雨科技</span><a class="tag" taget="_blank" href="https://segmentfault.com/t/tomcat">tomcat</a><a class="tag" taget="_blank" href="https://segmentfault.com/t/java">java</a><a class="tag" taget="_blank" href="https://segmentfault.com/t/%E5%BC%80%E6%BA%90%E8%BD%AF%E4%BB%B6">开源软件</a></li><li><a href="http://segmentfault.com/a/1190000015554640" title="Redis 集群-集群介绍" target="_blank">Redis 集群-集群介绍</a><span class="text-muted">北国风光</span><a class="tag" taget="_blank" href="https://segmentfault.com/t/redis">redis</a></li><li><a href="http://segmentfault.com/a/1190000015642628" title="Nginx+Tomcat集群第三步(负载均衡+Session同步）" target="_blank">Nginx+Tomcat集群第三步(负载均衡+Session同步）</a><span class="text-muted">司木</span><a class="tag" taget="_blank" href="https://segmentfault.com/t/%E8%B4%9F%E8%BD%BD%E5%9D%87%E8%A1%A1">负载均衡</a><a class="tag" taget="_blank" href="https://segmentfault.com/t/tomcat">tomcat</a><a class="tag" taget="_blank" href="https://segmentfault.com/t/centos">centos</a><a class="tag" taget="_blank" href="https://segmentfault.com/t/nginx">nginx</a><a class="tag" taget="_blank" href="https://segmentfault.com/t/linux">linux</a></li><li><a href="http://segmentfault.com/a/1190000016308047" title="【架构】Tomcat集群概述与架构解析" target="_blank">【架构】Tomcat集群概述与架构解析</a><span class="text-muted">MySelf</span><a class="tag" taget="_blank" href="https://segmentfault.com/t/%E6%9E%B6%E6%9E%84%E5%B8%88">架构师</a><a class="tag" taget="_blank" href="https://segmentfault.com/t/%E6%9E%B6%E6%9E%84%E8%AE%BE%E8%AE%A1">架构设计</a><a class="tag" taget="_blank" href="https://segmentfault.com/t/%E6%9E%B6%E6%9E%84">架构</a><a class="tag" taget="_blank" href="https://segmentfault.com/t/%E9%9B%86%E7%BE%A4">集群</a><a class="tag" taget="_blank" href="https://segmentfault.com/t/tomcat">tomcat</a></li><li><a href="http://segmentfault.com/a/1190000015975321" title="session一致性架构设计实践" target="_blank">session一致性架构设计实践</a><span class="text-muted">码魇</span><a class="tag" taget="_blank" href="https://segmentfault.com/t/redis">redis</a><a class="tag" taget="_blank" href="https://segmentfault.com/t/%E7%BC%93%E5%AD%98">缓存</a></li><li><a href="http://segmentfault.com/a/1190000015198833" title="Tomcat Session管理分析" target="_blank">Tomcat Session管理分析</a><span class="text-muted">Coding狗</span><a class="tag" taget="_blank" href="https://segmentfault.com/t/tomcat">tomcat</a></li><li><a href="http://segmentfault.com/a/1190000003012552" title="关于 PHP 中 Session 的几个问题" target="_blank">关于 PHP 中 Session 的几个问题</a><span class="text-muted">Mr_Jing</span><a class="tag" taget="_blank" href="https://segmentfault.com/t/redis">redis</a><a class="tag" taget="_blank" href="https://segmentfault.com/t/cookie">cookie</a><a class="tag" taget="_blank" href="https://segmentfault.com/t/%E4%BC%9A%E8%AF%9D%E5%AD%98%E5%82%A8">会话存储</a><a class="tag" taget="_blank" href="https://segmentfault.com/t/session">session</a><a class="tag" taget="_blank" href="https://segmentfault.com/t/php">php</a></li><li><a href="http://segmentfault.com/a/1190000012985691" title="tomcat目录解析" target="_blank">tomcat目录解析</a><span class="text-muted">简_矩_风</span><a class="tag" taget="_blank" href="https://segmentfault.com/t/%E5%89%8D%E7%AB%AF">前端</a><a class="tag" taget="_blank" href="https://segmentfault.com/t/tomcat">tomcat</a><a class="tag" taget="_blank" href="https://segmentfault.com/t/jsp">jsp</a></li></ul></div></div>
+  </body>
+</html>
