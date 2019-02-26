@@ -4,5 +4,4 @@
 * [maven基本概念](./doc/maven)
 * [vertx](./doc/vertx)
 * [jvm学习](./doc/jvm)
-* [tomcat集群配置](./tomcat)
 
