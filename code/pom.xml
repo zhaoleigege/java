@@ -14,5 +14,6 @@
         <module>maven</module>
         <module>codebyte</module>
         <module>transactional</module>
+        <module>jasperreport</module>
     </modules>
 </project>
