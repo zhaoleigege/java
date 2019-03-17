@@ -8,6 +8,7 @@
 
 * [java动态代理机制详解（JDK 和CGLIB，Javassist，ASM](https://blog.csdn.net/luanlouis/article/details/24589193)
 * [Java字节码Agent简单上手](https://blog.csdn.net/f59130/article/details/78367045)    **强烈推荐**
+* [ledis破解思路](http://liaojiacan.me/2017/10/12/Iedis%E7%A0%B4%E8%A7%A3%E6%80%9D%E8%B7%AF/index.html)
 
 ## 事务的实现
 
