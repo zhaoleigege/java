@@ -4,6 +4,11 @@
 
 业务代码的情况下给程序添加诸如日志、事务的功能。
 
+#### 参考资料
+
+* [java动态代理机制详解（JDK 和CGLIB，Javassist，ASM](https://blog.csdn.net/luanlouis/article/details/24589193)
+* [Java字节码Agent简单上手](https://blog.csdn.net/f59130/article/details/78367045)    **强烈推荐**
+
 ## 事务的实现
 
 #### 参考资料

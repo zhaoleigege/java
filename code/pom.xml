@@ -15,5 +15,6 @@
         <module>codebyte</module>
         <module>transactional</module>
         <module>jasperreport</module>
+        <module>agent</module>
     </modules>
 </project>
