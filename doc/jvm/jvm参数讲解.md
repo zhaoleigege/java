@@ -21,6 +21,23 @@
 # 内存日志分析+HeapDumpOnOutOfMemoryError
 ```
 
+查看当前jvm的信息
+
+```shell
+java -XX:+PrintCommandLineFlags -version
+```
+
+显示结果
+
+    ```shell
+-XX:InitialHeapSize=67108864 -XX:MaxHeapSize=1073741824 -XX:+PrintCommandLineFlags -XX:+UseCompressedClassPointers -XX:+UseCompressedOops -XX:+UseParallelGC
+java version "1.8.0_181"
+Java(TM) SE Runtime Environment (build 1.8.0_181-b13)
+Java HotSpot(TM) 64-Bit Server VM (build 25.181-b13, mixed mode)
+    ```
+
+
+
 实例1:
 
 ```shell
